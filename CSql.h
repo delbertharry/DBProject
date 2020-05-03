@@ -20,12 +20,17 @@ protected:
 	int DestroyConnection();
 	string ProcessQuery(string pSql);
 private:
-	string _sql;
+	string _sqlQuery;
+	string _sqlConnection;
 };
 
 int CSql::CreateConnection(string ConnectionString) 
 {
 	//TODO: Pas définir a ce moment
+	if (1)
+	{
+		_sqlConnection = ConnectionString;
+	}
 	return 0;
 }
 
@@ -38,6 +43,8 @@ int CSql::DestroyConnection()
 string CSql::ProcessQuery(string pSql)
 {
 	//TODO: Pas définir a ce moment
+	_sqlQuery = pSql;
+
 	return NULL;
 }
 
