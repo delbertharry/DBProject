@@ -68,11 +68,11 @@ int CSql::CreateConnection(string ConnectionString)
 			break;
 	}
 	//TODO: Pas définir a ce moment
-	if (1)
+	if (retCode == true)
 	{
 		_sqlConnection = string((const char *)retConString);
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int CSql::DestroyConnection()
@@ -91,15 +91,18 @@ string CSql::ProcessQuery(string pSql)
 		// Allocates the statement
 		return NULL;
 
-	if (SQL_SUCCESS != SQLExecDirect(SQLStatementHandle, (SQLCHAR*)SQLQuery, SQL_NTS)) {
+	if (SQL_SUCCESS != SQLExecDirect(SQLStatementHandle, (SQLWCHAR*)pSql.c_str(), SQL_NTS)) 
+	{
 		// Executes a preparable statement
 		showSQLError(SQL_HANDLE_STMT, SQLStatementHandle);
 		return NULL;
 	}
-	else {
+	else 
+	{
 		char name[256];
 		int age;
-		while (SQLFetch(SQLStatementHandle) == SQL_SUCCESS) {
+		while (SQLFetch(SQLStatementHandle) == SQL_SUCCESS) 
+		{
 			// Fetches the next rowset of data from the result
 			SQLGetData(SQLStatementHandle, 1, SQL_C_DEFAULT, &name, sizeof(name), NULL);
 			SQLGetData(SQLStatementHandle, 2, SQL_C_DEFAULT, &age, sizeof(age), NULL);
@@ -127,10 +130,16 @@ string CSql::showSQLError(unsigned int handleType, const SQLHANDLE& handle)
 {
 	SQLWCHAR SQLState[1024];
 	SQLWCHAR message[1024];
+	string retMsg;
 
 	if (SQL_SUCCESS == SQLGetDiagRec(handleType, handle, 1, SQLState, NULL, message, 1024, NULL))
+	{ 
+		retMsg = string("SQL driver message: ") + string((char *)message) + string("\nSQL state: ") + string((char*)((SQLCHAR)SQLState)) + string(".");
 		// Returns the current values of multiple fields of a diagnostic record that contains error, warning, and status information
-		return string((char*)"SQL driver message: " & (SQLCHAR)message & (char*)"\nSQL state: " & (SQLCHAR)SQLState & (char*)".").c_str();
+		return retMsg;
+	}
 	else
+	{
 		return NULL;
+	}		
 }
