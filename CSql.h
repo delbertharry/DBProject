@@ -2,6 +2,7 @@
 #pragma once
 #include <string>
 #include <cstring>
+#include <iostream>
 #include <windows.h>
 #include <sqlext.h>
 #include <sqltypes.h>
@@ -13,9 +14,10 @@ class CSql
 {
 public:
 	CSql();
+	CSql(const char * pConnectionString);
 	~CSql();
 	string showSQLError(unsigned int handleType, const SQLHANDLE& handle);
-	int CreateConnection(string ConnectionString);
+	int CreateConnection(const char* ConnectionString);
 	int DestroyConnection();
 	string ProcessQuery(string pSql);
 
@@ -26,10 +28,11 @@ private:
 	SQLHANDLE SQLConnectionHandle = NULL;
 	SQLHANDLE SQLStatementHandle = NULL;
 	SQLRETURN retCode = 0;
+	SQLCHAR retConString[1024]; // Conection string
 };
 
 //"DRIVER={SQL Server}; SERVER=localhost, 1433; DATABASE=myDB; UID=myID; PWD=myPW;"
-int CSql::CreateConnection(string ConnectionString) 
+int CSql::CreateConnection(const char* ConnectionString)
 {
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &SQLEnvHandle))
 		return EXIT_FAILURE;// Allocates the environment
@@ -43,9 +46,7 @@ int CSql::CreateConnection(string ConnectionString)
 	if (SQL_SUCCESS != SQLSetConnectAttr(SQLConnectionHandle, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0))
 		return EXIT_FAILURE;// Sets attributes that govern aspects of connections
 		
-
-	SQLWCHAR retConString[1024]; // Conection string
-	switch (SQLDriverConnect(SQLConnectionHandle, NULL, (SQLWCHAR*)ConnectionString.c_str(), SQL_NTS, retConString, 1024, NULL, SQL_DRIVER_NOPROMPT))
+	switch (SQLDriverConnect(SQLConnectionHandle, NULL, (SQLCHAR*)ConnectionString, SQL_NTS, retConString, 1024, NULL, SQL_DRIVER_NOPROMPT))
 	{
 		// Establishes connections to a driver and a data source
 		case SQL_SUCCESS:
@@ -68,7 +69,7 @@ int CSql::CreateConnection(string ConnectionString)
 			break;
 	}
 	//TODO: Pas définir a ce moment
-	if (retCode == true)
+	if (retCode == 1)
 	{
 		_sqlConnection = string((const char *)retConString);
 	}
@@ -77,7 +78,13 @@ int CSql::CreateConnection(string ConnectionString)
 
 int CSql::DestroyConnection()
 {
-	//TODO: Pas définir a ce moment
+	_sqlQuery = "";
+	_sqlConnection = "";
+	SQLEnvHandle = NULL;
+	SQLConnectionHandle = NULL;
+	SQLStatementHandle = NULL;
+	retCode = 0;
+	//TODO: Pas définir à ce moment
 	return 0;
 }
 
@@ -91,7 +98,7 @@ string CSql::ProcessQuery(string pSql)
 		// Allocates the statement
 		return NULL;
 
-	if (SQL_SUCCESS != SQLExecDirect(SQLStatementHandle, (SQLWCHAR*)pSql.c_str(), SQL_NTS)) 
+	if (SQL_SUCCESS != SQLExecDirect(SQLStatementHandle, (SQLCHAR*)pSql.c_str(), SQL_NTS)) 
 	{
 		// Executes a preparable statement
 		showSQLError(SQL_HANDLE_STMT, SQLStatementHandle);
@@ -121,6 +128,11 @@ CSql::CSql()
 	//TODO: Pas définir a ce moment mais je le definissais pour me mettre en memoire.
 }
 
+CSql::CSql(const char* pConnectionString)
+{
+	retCode = CreateConnection(pConnectionString);
+}
+
 CSql::~CSql()
 {
 	//TODO: Pas définir a ce moment mais je le definissais pour me mettre en memoire.
@@ -128,13 +140,13 @@ CSql::~CSql()
 
 string CSql::showSQLError(unsigned int handleType, const SQLHANDLE& handle)
 {
-	SQLWCHAR SQLState[1024];
-	SQLWCHAR message[1024];
+	SQLCHAR SQLState[1024];
+	SQLCHAR message[1024];
 	string retMsg;
 
 	if (SQL_SUCCESS == SQLGetDiagRec(handleType, handle, 1, SQLState, NULL, message, 1024, NULL))
 	{ 
-		retMsg = string("SQL driver message: ") + string((char *)message) + string("\nSQL state: ") + string((char*)((SQLCHAR)SQLState)) + string(".");
+		retMsg = string("SQL driver message: ") + string((char *)message) + string("\nSQL state: ") + string((char*)((SQLCHAR*)SQLState)) + string(".");
 		// Returns the current values of multiple fields of a diagnostic record that contains error, warning, and status information
 		return retMsg;
 	}
