@@ -10,10 +10,24 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 	
-	CSql ps("Data Source=(local);Initial Catalog=AdventureWorks2017;Integrated Security=True;User ID=sa;Password='';Connect Timeout=30");
+	string ConnectionString;
 
-	ps.ProcessQuery("select Name from Production.Location;");
-	cout << "Hello World";
+	if (argc > 1)
+	{ 
+		ConnectionString = string(argv[1]);
+
+		CSql ps(ConnectionString.c_str());
+		if (ps.GetError() == 0)
+		{
+			ps.ProcessQuery("select Name from Production.Location;");
+		}
+	
+		cout << ps.GetMsg();
+	}
+	else
+	{
+		cout << "No command line arguments";
+	}
 
 	return 0;
 }

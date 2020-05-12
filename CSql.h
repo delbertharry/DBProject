@@ -20,7 +20,8 @@ public:
 	int CreateConnection(const char* ConnectionString);
 	int DestroyConnection();
 	string ProcessQuery(string pSql);
-
+	inline string GetMsg() { return _errorMsg; }
+	inline short GetError() { return retCode; }
 private:
 	string _sqlQuery;
 	string _sqlConnection;
@@ -29,6 +30,7 @@ private:
 	SQLHANDLE SQLStatementHandle = NULL;
 	SQLRETURN retCode = 0;
 	SQLCHAR retConString[1024]; // Conection string  
+	string _errorMsg;
 };
 
 //"DRIVER={SQL Server}; SERVER=localhost, 1433; DATABASE=myDB; UID=myID; PWD=myPW;"
@@ -62,7 +64,7 @@ int CSql::CreateConnection(const char* ConnectionString)
 			retCode = -1;
 			break;
 		case SQL_ERROR:
-			showSQLError(SQL_HANDLE_DBC, SQLConnectionHandle);
+			_errorMsg = showSQLError(SQL_HANDLE_DBC, SQLConnectionHandle);
 			retCode = -1;
 			break;
 		default:
@@ -73,7 +75,7 @@ int CSql::CreateConnection(const char* ConnectionString)
 	{
 		_sqlConnection = string((const char *)retConString);
 	}
-	return EXIT_SUCCESS;
+	return retCode;
 }
 
 int CSql::DestroyConnection()
