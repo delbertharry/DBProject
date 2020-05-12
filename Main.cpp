@@ -31,3 +31,6 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
+/* http://wiki.ogre3d.org/Precompiled+headers */
+/* https://www.youtube.com/watch?v=1g_Xng_uH2w */
