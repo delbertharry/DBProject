@@ -114,15 +114,16 @@ string CSql::ProcessQuery(string pSql)
 		{
 			// Fetches the next rowset of data from the result
 			SQLGetData(SQLStatementHandle, 1, SQL_C_DEFAULT, &name, sizeof(name), NULL);
-			SQLGetData(SQLStatementHandle, 2, SQL_C_DEFAULT, &age, sizeof(age), NULL);
+			//SQLGetData(SQLStatementHandle, 2, SQL_C_DEFAULT, &age, sizeof(age), NULL);
 			// Retrieves data for a single column in the result set
-			cout << name << " " << age << endl;
+			//cout << name << " " << age << endl;
+			cout << name << endl;
 		}
 	}
 	//TODO: Pas définir a ce moment
 	_sqlQuery = pSql;
 
-	return NULL;
+	return _sqlQuery;
 }
 
 CSql::CSql()
