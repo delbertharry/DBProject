@@ -28,7 +28,7 @@ private:
 	SQLHANDLE SQLConnectionHandle = NULL;
 	SQLHANDLE SQLStatementHandle = NULL;
 	SQLRETURN retCode = 0;
-	SQLCHAR retConString[1024]; // Conection string
+	SQLCHAR retConString[1024]; // Conection string  
 };
 
 //"DRIVER={SQL Server}; SERVER=localhost, 1433; DATABASE=myDB; UID=myID; PWD=myPW;"
