@@ -119,6 +119,11 @@ string CSql::ProcessQuery(string pSql)
 			//cout << name << " " << age << endl;
 			cout << name << endl;
 		}
+		SQLFreeStmt(SQLStatementHandle, SQL_DROP);
+		SQLDisconnect(SQLConnectionHandle);
+		SQLFreeConnect(SQLConnectionHandle);
+		SQLFreeEnv(SQLEnvHandle);
+
 	}
 	//TODO: Pas définir a ce moment
 	_sqlQuery = pSql;
