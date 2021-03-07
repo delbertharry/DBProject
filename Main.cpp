@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 		CSql ps(ConnectionString.c_str());
 		if (ps.GetError() == 0)
 		{
-			ps.ProcessQuery("select Name from Production.Location;");
+			ps.ProcessQuery("select Name, LocationID  from Production.Location  order by LocationID;");
 		}
 	
 		cout << ps.GetMsg();

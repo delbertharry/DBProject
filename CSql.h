@@ -109,15 +109,15 @@ string CSql::ProcessQuery(string pSql)
 	else 
 	{
 		char name[256];
-		int age;
+		unsigned int age = 0;
 		while (SQLFetch(SQLStatementHandle) == SQL_SUCCESS) 
 		{
 			// Fetches the next rowset of data from the result
 			SQLGetData(SQLStatementHandle, 1, SQL_C_DEFAULT, &name, sizeof(name), NULL);
-			//SQLGetData(SQLStatementHandle, 2, SQL_C_DEFAULT, &age, sizeof(age), NULL);
+			SQLGetData(SQLStatementHandle, 2, SQL_C_SSHORT, &age, sizeof(age), NULL);
 			// Retrieves data for a single column in the result set
 			//cout << name << " " << age << endl;
-			cout << name << endl;
+			cout << name << "     "   << age  << endl;
 		}
 		SQLFreeStmt(SQLStatementHandle, SQL_DROP);
 		SQLDisconnect(SQLConnectionHandle);
